@@ -11,14 +11,31 @@
         }
         
         /* Анимация появления */
-        .fade-in {
+        /* .fade-in {
             animation: fadeIn 0.3s ease-out;
         }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
+        } */
+
+        .fade-in {
+            animation: articleEnter 0.45s cubic-bezier(.2,.8,.2,1) both;
+            will-change: opacity, transform;
         }
+
+        @keyframes articleEnter {
+            0% {
+                opacity: 0;
+                transform: scale(0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         
         /* Плавные переходы */
         .smooth {
