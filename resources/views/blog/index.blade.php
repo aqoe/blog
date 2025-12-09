@@ -14,7 +14,7 @@
         <nav class="space-y-6 text-center">
             @foreach($categories as $category)
                 <a href="{{ route('category.show', $category->slug) }}" 
-                   class="category-link block text-2xl md:text-4xl font-light tracking-wide text-gray-800 hover:text-gray-500 smooth">
+                   class="category-link block text-2xl md:text-2xl font-light tracking-wide text-gray-800">
                     {{ $category->name }}
                 </a>
             @endforeach

@@ -40,11 +40,11 @@
         
         <!-- Список постов -->
         <!-- Список постов -->
-        <div class="max-w-2xl mx-auto space-y-8">
+        <div class="max-w-xl mx-auto space-y-8">
             @foreach($posts as $post)
                 <article class="post-card group cursor-pointer border-b border-gray-100 pb-8"
                         onclick="openPost({{ $post->id }})">
-                    <h2 class="text-xl md:text-2xl font-light text-gray-800 group-hover:text-gray-500 smooth">
+                    <h2 class="text-xl md:text-xl font-light text-gray-800 group-hover:text-gray-700 smooth">
                         {{ $post->title }}
                     </h2>
                     @if($post->excerpt)
