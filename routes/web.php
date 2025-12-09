@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Admin\UploadController;
 
 // Авторизация
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -29,4 +30,5 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     
     Route::resource('posts', AdminPostController::class);
     Route::resource('categories', AdminCategoryController::class);
+    Route::post('/upload-image', [UploadController::class, 'uploadImage'])->name('upload.image');
 });

@@ -3,6 +3,27 @@
 @section('title', $category->name)
 
 @section('content')
+    <style>
+    /* Обычные ссылки */
+    .content a {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    /* Текст с подсказкой */
+    .content [data-tooltip] {
+        cursor: help;
+        text-decoration-line: underline;
+        text-decoration-style: dotted;
+        text-underline-offset: 3px;
+    }
+
+    /* Если ссылка + тултип */
+    .content a[data-tooltip] {
+        text-decoration-style: dotted;
+    }
+    </style>
+
     <div class="min-h-screen px-4 py-16">
         
         <!-- Назад -->
@@ -88,19 +109,63 @@
         
         function showCurrentPost() {
             const post = posts[currentIndex];
-
-            let imageHtml = '';
-            if (post.image) {
-                imageHtml = `
-                    <div class="mt-10">
-                        <div class="w-full aspect-square overflow-hidden">
-                            <img 
-                                src="/storage/${post.image}"
-                                class="w-full h-full object-cover"
-                                alt="${post.title}">
-                        </div>
-                    </div>
-                `;
+            
+            let contentHtml = '';
+            
+            try {
+                const data = typeof post.content === 'string' ? JSON.parse(post.content) : post.content;
+                
+                if (data && data.blocks) {
+                    data.blocks.forEach(block => {
+                        switch(block.type) {
+                            case 'header':
+                                const level = block.data.level || 2;
+                                const sizes = {2: 'text-2xl', 3: 'text-xl', 4: 'text-lg'};
+                                contentHtml += `<h${level} class="${sizes[level]} font-medium text-gray-800 mt-8 mb-4">${block.data.text}</h${level}>`;
+                                break;
+                            
+                            case 'paragraph':
+                                contentHtml += `<p class="text-gray-600 leading-relaxed mb-4">${formatText(block.data.text)}</p>`;
+                                break;
+                            
+                            case 'image':
+                                if (block.data.file && block.data.file.url) {
+                                    const sizeClasses = {
+                                        'small': 'w-48',
+                                        'medium': 'w-64 md:w-80',
+                                        'large': 'w-80 md:w-96',
+                                        'full': 'w-full'
+                                    };
+                                    const sizeClass = sizeClasses[block.data.size] || sizeClasses['medium'];
+                                    
+                                    contentHtml += `
+                                        <figure class="my-8 flex flex-col items-center">
+                                            <img src="${block.data.file.url}" 
+                                                class="${sizeClass} object-cover"
+                                                alt="${block.data.caption || ''}">
+                                            ${block.data.caption ? `<figcaption class="text-center text-gray-400 text-sm mt-2">${block.data.caption}</figcaption>` : ''}
+                                        </figure>
+                                    `;
+                                }
+                                break;
+                            
+                            case 'quote':
+                                contentHtml += `
+                                    <blockquote class="border-l-2 border-gray-300 pl-4 my-6 italic text-gray-500">
+                                        <p>${block.data.text}</p>
+                                        ${block.data.caption ? `<cite class="text-sm not-italic">— ${block.data.caption}</cite>` : ''}
+                                    </blockquote>
+                                `;
+                                break;
+                            
+                            case 'delimiter':
+                                contentHtml += `<div class="text-center my-8 text-gray-300">• • •</div>`;
+                                break;
+                        }
+                    });
+                }
+            } catch (e) {
+                contentHtml = `<div class="text-gray-600 font-light leading-relaxed whitespace-pre-line">${post.content}</div>`;
             }
 
             const content = `
@@ -108,16 +173,17 @@
                     <h1 class="text-2xl md:text-4xl font-light text-gray-800 mb-8 text-center">
                         ${post.title}
                     </h1>
-
-                    <div class="text-gray-600 font-light leading-relaxed whitespace-pre-line">
-                        ${post.content}
+                    <div class="content">
+                        ${contentHtml}
                     </div>
-
-                    ${imageHtml}
                 </article>
             `;
-
             document.getElementById('postContent').innerHTML = content;
+        }
+
+        function formatText(text) {
+            if (!text) return '';
+            return text;
         }
 
         
@@ -157,6 +223,36 @@
             if (Math.abs(diff) > 50) {
                 if (diff > 0) nextPost();
                 else prevPost();
+            }
+        });
+
+        // Инициализация тултипов после загрузки контента
+        // Тултипы
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.hasAttribute('data-tooltip')) {
+                const tooltip = e.target.getAttribute('data-tooltip');
+                
+                let tooltipEl = document.getElementById('tooltip');
+                if (!tooltipEl) {
+                    tooltipEl = document.createElement('div');
+                    tooltipEl.id = 'tooltip';
+                    tooltipEl.className = 'fixed bg-gray-800 text-white text-sm px-3 py-2 rounded shadow-lg z-50 max-w-xs';
+                    document.body.appendChild(tooltipEl);
+                }
+                
+                tooltipEl.textContent = tooltip;
+                tooltipEl.style.display = 'block';
+                
+                const rect = e.target.getBoundingClientRect();
+                tooltipEl.style.left = rect.left + 'px';
+                tooltipEl.style.top = (rect.bottom + 8) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseout', function(e) {
+            if (e.target.hasAttribute('data-tooltip')) {
+                const tooltipEl = document.getElementById('tooltip');
+                if (tooltipEl) tooltipEl.style.display = 'none';
             }
         });
     </script>
