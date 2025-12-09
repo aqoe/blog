@@ -15,21 +15,32 @@
             
             <nav class="space-y-2">
                 <a href="{{ route('admin.dashboard') }}" 
-                   class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
+                class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
                     🏠 Главная
                 </a>
                 <a href="{{ route('admin.posts.index') }}" 
-                   class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
+                class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
                     📄 Посты
                 </a>
                 <a href="{{ route('admin.categories.index') }}" 
-                   class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
+                class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
                     🏷️ Категории
                 </a>
                 <a href="/" target="_blank"
-                   class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
+                class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">
                     🌐 Открыть сайт
                 </a>
+                
+                <!-- Разделитель -->
+                <div class="border-t border-gray-700 my-4"></div>
+                
+                <!-- Выход -->
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-4 py-2 text-gray-400 hover:bg-gray-700 hover:text-white rounded">
+                        🚪 Выйти
+                    </button>
+                </form>
             </nav>
         </aside>
 
